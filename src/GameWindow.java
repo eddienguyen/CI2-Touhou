@@ -1,20 +1,36 @@
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
+import java.awt.event.*;
 
 public class GameWindow extends JFrame{
 
     GameCanvas canvas;
+
+    long lastTimeUpdate;
+
     public GameWindow()  {
         this.setSize(800,600);
 
         this.canvas = new GameCanvas();
         this.setContentPane(this.canvas);
 
-        this.canvas.setVisible(true);
-        this.setVisible(true);
+        this.addKeyListener(new KeyListener() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+
+            }
+
+            @Override
+            public void keyPressed(KeyEvent e) {
+                canvas.keyPressed(e);
+            }
+
+            @Override
+            public void keyReleased(KeyEvent e) {
+                canvas.keyReleased(e);
+            }
+        });
+
         this.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
@@ -22,8 +38,25 @@ public class GameWindow extends JFrame{
             }
         });
         this.setResizable(false);
+
+        this.canvas.setVisible(true);
+        this.setVisible(true);
+        lastTimeUpdate = System.nanoTime();
     }
 
+    public void gameLoop(){
+        while (true){
+
+            long currentTime = System.nanoTime();
+
+            if (currentTime - lastTimeUpdate >= 17000000){
+                canvas.run();
+                canvas.render();
+                lastTimeUpdate = currentTime;
+            }
+
+        }
+    }
 
 
 
