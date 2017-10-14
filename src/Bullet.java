@@ -1,3 +1,4 @@
+import bases.Utils;
 import org.w3c.dom.css.Rect;
 
 import javax.imageio.ImageIO;
@@ -11,21 +12,15 @@ public class Bullet {
     int x, y;
     int vx = 1;
     int vy = 1;
-    BufferedImage bulletImg;
-    BufferedImage ground;
+    BufferedImage image;
     boolean outOfGame;
 
     public Bullet(int x, int y) {
-        this.x = x;
-        this.y = 0;
+        this.x = 182;
+        this.y = 500;
         this.outOfGame = false;
 
-        try {
-            bulletImg = ImageIO.read(new File("assets/images/enemies/bullets/white.png"));
-            ground = ImageIO.read(new File("assets/images/background/0.png"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        image = Utils.loadImage("assets/images/enemies/bullets/white.png");
 
         //generate random position for a bullet
         Random rnd = new Random();
@@ -37,14 +32,18 @@ public class Bullet {
 
     }
 
-    public void update() {
+    public void render(Graphics g){
+        g.drawImage(image,x,y,null);
+    }
+
+    public void run() {
 
         x += vx;
         y += vy;
 
         if (x < 0) {
             vx = -vx;
-        } else if (x >= (ground.getWidth() - bulletImg.getWidth() - 10)) {
+        } else if (x >= (385 - image.getWidth() - 10)) {
             vx = -vx;
         } else if (y > 600) {
             outOfGame = true;
@@ -53,7 +52,7 @@ public class Bullet {
     }
 
     public Rectangle getBounds() {
-        return new Rectangle(x, y, bulletImg.getWidth(), bulletImg.getHeight());
+        return new Rectangle(x, y, image.getWidth(), image.getHeight());
     }
 
 
