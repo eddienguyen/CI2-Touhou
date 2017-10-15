@@ -6,6 +6,7 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.Timer;
 
 public class Player {
     BufferedImage image;
@@ -23,7 +24,10 @@ public class Player {
     final int BOTTOM = 500;
 
     int playerHP = 500;
-    boolean xPressed;
+    boolean xPressed,zPressed;
+    boolean shootable = false;
+    long fireRate = 50;
+    long nextFire;
 
 
     public Player() {
@@ -51,6 +55,7 @@ public class Player {
             downPressed = true;
         }
         if (e.getKeyCode() == KeyEvent.VK_X) xPressed = true;
+        if (e.getKeyCode() == KeyEvent.VK_Z) zPressed = true;
     }//keyPressed
 
     public void keyReleased(KeyEvent e) {
@@ -70,6 +75,7 @@ public class Player {
             downPressed = false;
         }
         if (e.getKeyCode() == KeyEvent.VK_X) xPressed = false;
+        if (e.getKeyCode() == KeyEvent.VK_Z) zPressed = false;
 
     }
 
@@ -123,11 +129,65 @@ public class Player {
     }
 
     public void shoot(ArrayList<PlayerSpell> spells){
-        if (xPressed == true){
-            PlayerSpell newSpell = new PlayerSpell();
-            newSpell.x = X;
-            newSpell.y = Y;
-            spells.add(newSpell);
+        if  (xPressed == true) {
+
+
+                PlayerSpell newSpell = new PlayerSpell();
+                newSpell.x = X;
+                newSpell.y = Y;
+                spells.add(newSpell);
+
+                long currentTime = System.currentTimeMillis();
+            System.out.println(currentTime);
+
+
         }
     }
+
+    public void fireWithRate(ArrayList<PlayerSpell> spells){        //Code chạy, đhs ?
+        long currentTime = System.currentTimeMillis();
+        if (xPressed == true){
+            if (currentTime > this.nextFire){
+                PlayerSpell newSpell = new PlayerSpell();
+                newSpell.setX(X);
+                newSpell.setY(Y);
+                newSpell.setPosition("middle");
+                spells.add(newSpell);
+                this.nextFire = currentTime + fireRate;
+
+            }
+
+        }
+    }
+
+    public void tripleShot(ArrayList<PlayerSpell> spells){
+        long currentTime = System.currentTimeMillis();
+        if (zPressed == true){
+            if (currentTime > this.nextFire){
+                PlayerSpell leftSpell = new PlayerSpell();
+                PlayerSpell rightSpell = new PlayerSpell();
+                PlayerSpell middleSpell = new PlayerSpell();
+
+                leftSpell.setX(X);
+                rightSpell.setX(X);
+                middleSpell.setX(X);
+                leftSpell.setY(Y);
+                rightSpell.setY(Y);
+                middleSpell.setY(Y);
+
+                leftSpell.setPosition("left");
+                rightSpell.setPosition("right");
+                middleSpell.setPosition("middle");
+
+                spells.add(leftSpell);
+                spells.add(rightSpell);
+                spells.add(middleSpell);
+
+                this.nextFire = currentTime + fireRate;
+
+            }
+        }
+    }
+
+
 }

@@ -1,3 +1,5 @@
+import touhou.Enemy;
+import touhou.EnemySpell;
 import touhou.Player;
 import touhou.PlayerSpell;
 
@@ -21,9 +23,10 @@ public class GameCanvas extends JPanel {
     Graphics backGraphics;
 
     ArrayList<PlayerSpell> spells = new ArrayList<>();
-
+    ArrayList<EnemySpell> enemySpells = new ArrayList<>();
 
     Player player = new Player();
+    Enemy enemy = new Enemy();
 
 
     public GameCanvas() {
@@ -33,7 +36,7 @@ public class GameCanvas extends JPanel {
         //2.Load bg:
         try {
             background = ImageIO.read(new File("assets/images/background/0.png"));
-            enemy_stand = ImageIO.read(new File("assets/images/enemies/level0/black/0.png"));
+
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -45,12 +48,16 @@ public class GameCanvas extends JPanel {
         backGraphics.drawImage(background, 0, ground1Y, null);
         backGraphics.drawImage(background, 0, ground2Y, null);
         player.render(backGraphics);
+        enemy.render(backGraphics);
 
         for (PlayerSpell spell : spells){
             spell.render(backGraphics);
         }
+        for (EnemySpell spell : enemySpells){
+            spell.render(backGraphics);
+        }
 
-        backGraphics.drawImage(enemy_stand, background.getWidth() / 2, 0, null);
+
 
         //background update: when ground1 touch the edge, replace ground2 position to the end of ground1 and vice versa
         ground1Y += 1;
@@ -84,39 +91,29 @@ public class GameCanvas extends JPanel {
     public void run() {
 
         player.run();
-        player.shoot(spells);
+        //player.shoot(spells);
+
+        player.fireWithRate(spells);
 
         for (PlayerSpell spell : spells){
+            spell.run(player.X,player.Y);
+        }
+
+        //3 speel at a time
+        player.tripleShot(spells);
+        for (PlayerSpell spell : spells){
+            spell.spellOfThree(player.X,player.Y);
+        }
+
+
+        enemy.run();
+        enemy.reLoad(enemySpells);
+
+        for (EnemySpell spell : enemySpells){
             spell.run();
         }
     }//run
 
-    /*
-
-    public void checkCollisionWithPlayer() {
-        for (Bullet bullet : bullets) {
-            if (bullet.getBounds().intersects(getPlayerBounds())) {
-                playerHP--;
-            }
-        }
-
-    }
-    */
-//    public void reLoad() {
-//        for (int i = 0; i <= amountOfBullets; i++) {
-//            Bullet bullet = new Bullet(background.getWidth() / 2, 0);
-//            bullets.add(bullet);
-//        }
-//    }
-//
-//    public boolean bulletsOutOfRange() {
-//        int dumpBullets = 0;
-//        for (Bullet bullet : bullets) {
-//            if (bullet.outOfGame) dumpBullets++;
-//        }
-//        if (dumpBullets == bullets.size()) return true;
-//        return false;
-//    }
 
 
 }

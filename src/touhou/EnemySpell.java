@@ -1,3 +1,5 @@
+package touhou;
+
 import bases.Utils;
 import org.w3c.dom.css.Rect;
 
@@ -8,16 +10,16 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Random;
 
-public class Bullet {
+public class EnemySpell {
     int x, y;
     int vx = 1;
     int vy = 1;
     BufferedImage image;
     boolean outOfGame;
 
-    public Bullet(int x, int y) {
-        this.x = 182;
-        this.y = 500;
+    public EnemySpell(int x, int y) {
+        this.x = x;
+        this.y = y;
         this.outOfGame = false;
 
         image = Utils.loadImage("assets/images/enemies/bullets/white.png");
@@ -53,6 +55,11 @@ public class Bullet {
 
     public Rectangle getBounds() {
         return new Rectangle(x, y, image.getWidth(), image.getHeight());
+    }
+
+    public void checkCollisionWithPlayer() {
+
+
     }
 
 
