@@ -17,6 +17,7 @@ public class EnemySpell {
     BufferedImage image;
     boolean outOfGame;
 
+
     public EnemySpell(int x, int y) {
         this.x = x;
         this.y = y;
@@ -34,8 +35,8 @@ public class EnemySpell {
 
     }
 
-    public void render(Graphics g){
-        g.drawImage(image,x,y,null);
+    public void render(Graphics g) {
+        g.drawImage(image, x, y, null);
     }
 
     public void run() {
@@ -57,8 +58,8 @@ public class EnemySpell {
         return new Rectangle(x, y, image.getWidth(), image.getHeight());
     }
 
-    public void checkCollisionWithPlayer() {
-
+    public void checkCollisionWithPlayer(Player player) {
+        if (this.getBounds().intersects(player.getPlayerBounds())) player.HP--;
 
     }
 

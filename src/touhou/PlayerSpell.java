@@ -7,7 +7,8 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 
 public class PlayerSpell {
-    public int x,y;
+    public int x;
+    public int y;
     final int SPEED = 10;
     BufferedImage image;
     String position;
@@ -62,22 +63,15 @@ public class PlayerSpell {
 
         setY(this.y -= SPEED);
 
-        this.x = (int) clamp(this.x,LEFT,RIGHT - image.getWidth());
+        this.x = (int) Ground.clamp(this.x,LEFT,RIGHT-image.getWidth());
     }
 
     public Rectangle getBounds(){
         return new Rectangle(x,y,image.getWidth(),image.getHeight());
     }
 
-    private float clamp(float value, float min, float max) {
-        if (value < min) {
-            return min;
-        }
-
-        if (value > max) {
-            return max;
-        }
-
-        return value;
+    public void checkHitEnemy(Enemy enemy){
+        if (this.getBounds().intersects(enemy.getBounds())) enemy.HP--;
     }
+
 }

@@ -1,7 +1,4 @@
-import touhou.Enemy;
-import touhou.EnemySpell;
-import touhou.Player;
-import touhou.PlayerSpell;
+import touhou.*;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -14,19 +11,18 @@ import java.util.ArrayList;
 
 public class GameCanvas extends JPanel {
 
-    BufferedImage background, enemy_stand;
-
-    int ground1Y = 600;
-    int ground2Y = ground1Y - 3109;
-
     BufferedImage backBuffer;
     Graphics backGraphics;
+
+    BufferedImage RightPanel;
+    Graphics rightGraphics;
 
     ArrayList<PlayerSpell> spells = new ArrayList<>();
     ArrayList<EnemySpell> enemySpells = new ArrayList<>();
 
     Player player = new Player();
     Enemy enemy = new Enemy();
+    Ground background = new Ground();
 
 
     public GameCanvas() {
@@ -34,48 +30,44 @@ public class GameCanvas extends JPanel {
         backBuffer = new BufferedImage(800, 600, BufferedImage.TYPE_INT_ARGB);
         backGraphics = backBuffer.getGraphics();
         //2.Load bg:
-        try {
-            background = ImageIO.read(new File("assets/images/background/0.png"));
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        //on separated class
     }
 
 
     public void render() {
         //1.draw everything on back buffer
-        backGraphics.drawImage(background, 0, ground1Y, null);
-        backGraphics.drawImage(background, 0, ground2Y, null);
+        background.render(backGraphics);
         player.render(backGraphics);
+
         enemy.render(backGraphics);
 
-        for (PlayerSpell spell : spells){
+        for (PlayerSpell spell : spells) {
             spell.render(backGraphics);
         }
-        for (EnemySpell spell : enemySpells){
+        for (EnemySpell spell : enemySpells) {
             spell.render(backGraphics);
         }
-
-
-
-        //background update: when ground1 touch the edge, replace ground2 position to the end of ground1 and vice versa
-        ground1Y += 1;
-        ground2Y += 1;
-        if (ground1Y > 0) ground2Y = ground1Y - 3109;
-        if (ground2Y > 0) ground1Y = ground2Y - 3109;
-        //end background update.
-
 
         //2.Call repaint
         repaint();
     }
 
-    //3.draw Background:
+
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
         g.drawImage(backBuffer, 0, 0, null);
+        g.drawString(String.format("HP: %s", player.HP), 400, 500);
+        g.drawString(String.format("mana: %s", player.mana), 400, 550);
+        g.drawString(String.format("HP: %s", enemy.HP), 400, 50);
+
+        if (player.HP <= 0) {
+            g.drawString("YOU DIED!", 450, 300);
+            backGraphics = null;
+        } else if (enemy.HP <= 0) {
+            g.drawString("YOU WIN!", 450, 300);
+            backGraphics = null;
+        }
 
     }
 
@@ -91,29 +83,30 @@ public class GameCanvas extends JPanel {
     public void run() {
 
         player.run();
-        //player.shoot(spells);
 
         player.fireWithRate(spells);
 
-        for (PlayerSpell spell : spells){
-            spell.run(player.X,player.Y);
+        for (PlayerSpell spell : spells) {
+            spell.run(player.X, player.Y);
+            spell.checkHitEnemy(enemy);
         }
 
-        //3 speel at a time
+        //3 spell at a time
         player.tripleShot(spells);
-        for (PlayerSpell spell : spells){
-            spell.spellOfThree(player.X,player.Y);
+        for (PlayerSpell spell : spells) {
+            spell.spellOfThree(player.X, player.Y);
+            spell.checkHitEnemy(enemy);
         }
 
 
         enemy.run();
         enemy.reLoad(enemySpells);
 
-        for (EnemySpell spell : enemySpells){
+        for (EnemySpell spell : enemySpells) {
             spell.run();
+            spell.checkCollisionWithPlayer(player);
         }
     }//run
-
 
 
 }

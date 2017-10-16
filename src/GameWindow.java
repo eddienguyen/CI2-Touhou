@@ -2,14 +2,14 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 
-public class GameWindow extends JFrame{
+public class GameWindow extends JFrame {
 
     GameCanvas canvas;
 
     long lastTimeUpdate;
 
-    public GameWindow()  {
-        this.setSize(800,600);
+    public GameWindow() {
+        this.setSize(800, 600);
 
         this.canvas = new GameCanvas();
         this.setContentPane(this.canvas);
@@ -44,12 +44,12 @@ public class GameWindow extends JFrame{
         lastTimeUpdate = System.nanoTime();
     }
 
-    public void gameLoop(){
-        while (true){
+    public void gameLoop() {
+        while (true) {
 
             long currentTime = System.nanoTime();
 
-            if (currentTime - lastTimeUpdate >= 17000000){
+            if (currentTime - lastTimeUpdate >= 17000000) {
                 canvas.run();
                 canvas.render();
                 lastTimeUpdate = currentTime;
@@ -57,7 +57,6 @@ public class GameWindow extends JFrame{
 
         }
     }
-
 
 
 }

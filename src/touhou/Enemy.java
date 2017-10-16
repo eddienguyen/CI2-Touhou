@@ -11,25 +11,27 @@ public class Enemy {
     int y = 0;
     BufferedImage image;
     int SPEED = 2;
-
+    boolean isDeath = false;
 
     final int loadOfSpells = 20;
+    public int HP = 500;
 
 
-    public Enemy(){
+    public Enemy() {
         image = Utils.loadImage("assets/images/enemies/level0/black/0.png");
     }
 
-    public void render(Graphics graphics){
-        graphics.drawImage(image,x,y,null);
+    public void render(Graphics graphics) {
+        if (HP > 0) {
+            graphics.drawImage(image, x, y, null);
+        } else isDeath = true;
     }
 
-    public void run(){
+    public void run() {
         x += SPEED;
-        if ( (x >= 384-image.getWidth()) || (x<=0) ){
+        if ((x >= 384 - image.getWidth()) || (x <= 0)) {
             SPEED = -SPEED;
         }
-
 
     }
 
@@ -45,11 +47,17 @@ public class Enemy {
         return value;
     }
 
-    public void shoot(ArrayList<EnemySpell> spells){
-        for (int i = 0; i<loadOfSpells; i++){
-            EnemySpell newSpell = new EnemySpell(this.x,this.y);
-            spells.add(newSpell);
+    public void shoot(ArrayList<EnemySpell> spells) {
+        if (!isDeath) {
+
+            for (int i = 0; i < loadOfSpells; i++) {
+                EnemySpell newSpell = new EnemySpell(this.x, this.y);
+                spells.add(newSpell);
+            }
+
         }
+
+
     }
 
     public boolean spellsOutOfRange(ArrayList<EnemySpell> spells) {
@@ -65,5 +73,9 @@ public class Enemy {
         if (spellsOutOfRange(spells)) {
             shoot(spells);
         }
+    }
+
+    public Rectangle getBounds() {
+        return new Rectangle(x, y, image.getWidth(), image.getHeight());
     }
 }

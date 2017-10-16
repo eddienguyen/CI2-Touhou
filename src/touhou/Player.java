@@ -23,10 +23,10 @@ public class Player {
     final int TOP = 0;
     final int BOTTOM = 500;
 
-    int playerHP = 500;
-    boolean xPressed,zPressed;
+    public int HP = 100, mana = 200;
+    boolean xPressed, zPressed;
     boolean shootable = false;
-    long fireRate = 50;
+    long fireRate = 100;
     long nextFire;
 
 
@@ -34,8 +34,8 @@ public class Player {
         image = Utils.loadImage("assets/images/players/straight/0.png");
     }
 
-    public void render(Graphics graphics){
-        graphics.drawImage(image,X,Y,null);
+    public void render(Graphics graphics) {
+        graphics.drawImage(image, X, Y, null);
     }
 
     public void keyPressed(KeyEvent e) {
@@ -82,11 +82,6 @@ public class Player {
 
     public void run() {
 
-//        if ((playerHP <= 0) && (bulletsOutOfRange())) System.exit(0);  //when player is dead
-//        //@a Linh: để tạm bulletsOutOfRange là lúc đóng chương trình vì vẫn chưa biết kết thúc game như nào cho hợp lý
-//
-//        if (bulletsOutOfRange()) reLoad();
-
         int vx = 0;
         int vy = 0;
 
@@ -100,54 +95,29 @@ public class Player {
         if (upPressed) {
             vy -= SPEED;
         }
-        if ((downPressed)) {vy += SPEED;      //40 = size of titlebar
+        if ((downPressed)) {
+            vy += SPEED;
         }
         X = X + vx;
         Y = Y + vy;
 
-//        checkCollisionWithPlayer();
 
-        X = (int)clamp(X, LEFT , RIGHT - image.getWidth());
-        Y = (int)clamp(Y, TOP, BOTTOM);
+        X = (int) Ground.clamp(X, LEFT, RIGHT - image.getWidth());
+        Y = (int) Ground.clamp(Y, TOP, BOTTOM);
+
 
     }//run
 
-    private float clamp(float value, float min, float max) {
-        if (value < min) {
-            return min;
-        }
-
-        if (value > max) {
-            return max;
-        }
-
-        return value;
-    }
 
     public Rectangle getPlayerBounds() {
-        return new Rectangle(X, Y, image.getWidth(), image.getHeight());
+
+        return new Rectangle(X, Y, image.getWidth(), image.getHeight() / 2);
     }
 
-    public void shoot(ArrayList<PlayerSpell> spells){
-        if  (xPressed == true) {
-
-
-                PlayerSpell newSpell = new PlayerSpell();
-                newSpell.x = X;
-                newSpell.y = Y;
-                spells.add(newSpell);
-
-                long currentTime = System.currentTimeMillis();
-            System.out.println(currentTime);
-
-
-        }
-    }
-
-    public void fireWithRate(ArrayList<PlayerSpell> spells){        //Code chạy, đhs ?
+    public void fireWithRate(ArrayList<PlayerSpell> spells) {        //Code chạy, đhs ?
         long currentTime = System.currentTimeMillis();
-        if (xPressed == true){
-            if (currentTime > this.nextFire){
+        if (xPressed == true) {
+            if (currentTime > this.nextFire) {
                 PlayerSpell newSpell = new PlayerSpell();
                 newSpell.setX(X);
                 newSpell.setY(Y);
@@ -160,10 +130,10 @@ public class Player {
         }
     }
 
-    public void tripleShot(ArrayList<PlayerSpell> spells){
+    public void tripleShot(ArrayList<PlayerSpell> spells) {
         long currentTime = System.currentTimeMillis();
-        if (zPressed == true){
-            if (currentTime > this.nextFire){
+        if ((zPressed == true) && (mana > 0)) {
+            if (currentTime > this.nextFire) {
                 PlayerSpell leftSpell = new PlayerSpell();
                 PlayerSpell rightSpell = new PlayerSpell();
                 PlayerSpell middleSpell = new PlayerSpell();
@@ -186,6 +156,7 @@ public class Player {
                 this.nextFire = currentTime + fireRate;
 
             }
+            this.mana--;
         }
     }
 
