@@ -1,5 +1,6 @@
 package touhou;
 
+import bases.GameObject;
 import bases.Utils;
 
 import java.awt.*;
@@ -8,11 +9,7 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Timer;
 
-public class Player {
-    BufferedImage image;
-
-    public int X = 182;
-    public int Y = 500;
+public class Player extends GameObject {
 
     boolean rightPressed, leftPressed, upPressed, downPressed;
 
@@ -25,17 +22,15 @@ public class Player {
 
     public int HP = 100, mana = 200;
     boolean xPressed, zPressed;
-    boolean shootable = false;
-    long fireRate = 100;
-    long nextFire;
-
+    boolean spellDisabled;
+    int coolDownCount;
+    final int COOLDOWNTIME = 5;
+    Point l1, r1;
 
     public Player() {
         image = Utils.loadImage("assets/images/players/straight/0.png");
-    }
-
-    public void render(Graphics graphics) {
-        graphics.drawImage(image, X, Y, null);
+        x = 182;
+        y = 500;
     }
 
     public void keyPressed(KeyEvent e) {
@@ -79,12 +74,16 @@ public class Player {
 
     }
 
-
     public void run() {
 
+        move();
+        shoot();
+
+    }//run
+
+    private void move() {
         int vx = 0;
         int vy = 0;
-
 
         if (rightPressed) {
             vx += SPEED;
@@ -98,67 +97,74 @@ public class Player {
         if ((downPressed)) {
             vy += SPEED;
         }
-        X = X + vx;
-        Y = Y + vy;
+        x = x + vx;
+        y = y + vy;
+
+        x = (int) Ground.clamp(x, LEFT, RIGHT - image.getWidth());
+        y = (int) Ground.clamp(y, TOP, BOTTOM);
+    }
 
 
-        X = (int) Ground.clamp(X, LEFT, RIGHT - image.getWidth());
-        Y = (int) Ground.clamp(Y, TOP, BOTTOM);
+    @Override
+    public BufferedImage getImage() {
+        return image;
+    }
 
+    public void shoot() {
+        if (spellDisabled) {
+            coolDownCount++;
+            if (coolDownCount >= COOLDOWNTIME) {
+                spellDisabled = false;
+                coolDownCount = 0;
+            }
+            return;
+        }
+        if (xPressed == true) {
+            PlayerSpell newSpell = new PlayerSpell();
+            newSpell.setX(x);
+            newSpell.setY(y);
+            newSpell.setPosition("middle");
 
-    }//run
+            GameObject.add(newSpell);
 
+            spellDisabled = true;
+        }
+
+    }
 
     public Rectangle getPlayerBounds() {
-
-        return new Rectangle(X, Y, image.getWidth(), image.getHeight() / 2);
+        return new Rectangle((int) x, (int) y, image.getWidth(), image.getHeight());
     }
 
-    public void fireWithRate(ArrayList<PlayerSpell> spells) {        //Code chạy, đhs ?
-        long currentTime = System.currentTimeMillis();
-        if (xPressed == true) {
-            if (currentTime > this.nextFire) {
-                PlayerSpell newSpell = new PlayerSpell();
-                newSpell.setX(X);
-                newSpell.setY(Y);
-                newSpell.setPosition("middle");
-                spells.add(newSpell);
-                this.nextFire = currentTime + fireRate;
-
-            }
-
-        }
-    }
-
-    public void tripleShot(ArrayList<PlayerSpell> spells) {
-        long currentTime = System.currentTimeMillis();
-        if ((zPressed == true) && (mana > 0)) {
-            if (currentTime > this.nextFire) {
-                PlayerSpell leftSpell = new PlayerSpell();
-                PlayerSpell rightSpell = new PlayerSpell();
-                PlayerSpell middleSpell = new PlayerSpell();
-
-                leftSpell.setX(X);
-                rightSpell.setX(X);
-                middleSpell.setX(X);
-                leftSpell.setY(Y);
-                rightSpell.setY(Y);
-                middleSpell.setY(Y);
-
-                leftSpell.setPosition("left");
-                rightSpell.setPosition("right");
-                middleSpell.setPosition("middle");
-
-                spells.add(leftSpell);
-                spells.add(rightSpell);
-                spells.add(middleSpell);
-
-                this.nextFire = currentTime + fireRate;
-
-            }
-            this.mana--;
-        }
-    }
+//    public void tripleShot(ArrayList<PlayerSpell> spells) {
+//        long currentTime = System.currentTimeMillis();
+//        if ((zPressed == true) && (mana > 0)) {
+//            if (currentTime > this.nextFire) {
+//                PlayerSpell leftSpell = new PlayerSpell();
+//                PlayerSpell rightSpell = new PlayerSpell();
+//                PlayerSpell middleSpell = new PlayerSpell();
+//
+//                leftSpell.setX(X);
+//                rightSpell.setX(X);
+//                middleSpell.setX(X);
+//                leftSpell.setY(Y);
+//                rightSpell.setY(Y);
+//                middleSpell.setY(Y);
+//
+//                leftSpell.setPosition("left");
+//                rightSpell.setPosition("right");
+//                middleSpell.setPosition("middle");
+//
+//                spells.add(leftSpell);
+//                spells.add(rightSpell);
+//                spells.add(middleSpell);
+//
+//                this.nextFire = currentTime + fireRate;
+//
+//            }
+//            this.mana--;
+//        }
+//    }
 
 
 }

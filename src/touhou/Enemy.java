@@ -1,81 +1,76 @@
 package touhou;
 
+import bases.GameObject;
 import bases.Utils;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
-public class Enemy {
-    int x = 182;
-    int y = 0;
+public class Enemy extends GameObject {
     BufferedImage image;
     int SPEED = 2;
+    final int LEFT = 384;
+    final int RIGHT = 0;
+    final int TOP = 0;
+    final int BOTTOM = 500;
+
     boolean isDeath = false;
 
-    final int loadOfSpells = 20;
+    final int loadOfSpells = 3;
+    long nextFire;
+    final int FIRERATE = 1000;
     public int HP = 500;
 
 
     public Enemy() {
+
         image = Utils.loadImage("assets/images/enemies/level0/black/0.png");
+        x = 182;
+        y = 0;
+    }
+
+    @Override
+    public BufferedImage getImage() {
+        return image;
     }
 
     public void render(Graphics graphics) {
         if (HP > 0) {
-            graphics.drawImage(image, x, y, null);
+            graphics.drawImage(image, (int) x, (int) y, null);
         } else isDeath = true;
     }
 
     public void run() {
         x += SPEED;
-        if ((x >= 384 - image.getWidth()) || (x <= 0)) {
+        if ((x >= LEFT - image.getWidth()) || (x <= RIGHT)) {
             SPEED = -SPEED;
         }
+        shoot();
 
     }
 
-    private float clamp(float value, float min, float max) {
-        if (value < min) {
-            return min;
-        }
+    public void shoot() {
 
-        if (value > max) {
-            return max;
-        }
-
-        return value;
-    }
-
-    public void shoot(ArrayList<EnemySpell> spells) {
+        long currentTime = System.currentTimeMillis();
         if (!isDeath) {
-
-            for (int i = 0; i < loadOfSpells; i++) {
-                EnemySpell newSpell = new EnemySpell(this.x, this.y);
-                spells.add(newSpell);
+            if (currentTime > this.nextFire) {
+                for (int i = 0; i < loadOfSpells; i++) {
+                    EnemySpell newSpell = new EnemySpell();
+                    newSpell.x = x;
+                    newSpell.y = y;
+                    GameObject.add(newSpell);
+                }
+                this.nextFire = currentTime + FIRERATE;
             }
 
         }
 
-
     }
 
-    public boolean spellsOutOfRange(ArrayList<EnemySpell> spells) {
-        int dumpSpells = 0;
-        for (EnemySpell spell : spells) {
-            if (spell.outOfGame) dumpSpells++;
-        }
-        if (dumpSpells == spells.size()) return true;
-        return false;
-    }
-
-    public void reLoad(ArrayList<EnemySpell> spells) {
-        if (spellsOutOfRange(spells)) {
-            shoot(spells);
-        }
-    }
 
     public Rectangle getBounds() {
-        return new Rectangle(x, y, image.getWidth(), image.getHeight());
+        return new Rectangle((int) x, (int) y, image.getWidth(), image.getHeight());
     }
+
 }

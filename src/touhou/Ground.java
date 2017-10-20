@@ -1,17 +1,18 @@
 package touhou;
 
+import bases.GameObject;
+
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
-public class Ground {
+public class Ground extends GameObject{
     float value,min,max;
 
     int ground1Y = 600;
     int ground2Y = ground1Y - 3109;
-    BufferedImage image;
 
     public Ground(){
         try {

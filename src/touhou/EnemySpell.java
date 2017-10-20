@@ -1,5 +1,6 @@
 package touhou;
 
+import bases.GameObject;
 import bases.Utils;
 import org.w3c.dom.css.Rect;
 
@@ -10,20 +11,15 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Random;
 
-public class EnemySpell {
-    int x, y;
+public class EnemySpell extends GameObject {
     int vx = 1;
     int vy = 1;
-    BufferedImage image;
     boolean outOfGame;
 
 
-    public EnemySpell(int x, int y) {
-        this.x = x;
-        this.y = y;
-        this.outOfGame = false;
-
+    public EnemySpell() {
         image = Utils.loadImage("assets/images/enemies/bullets/white.png");
+        this.outOfGame = false;
 
         //generate random position for a bullet
         Random rnd = new Random();
@@ -35,9 +31,6 @@ public class EnemySpell {
 
     }
 
-    public void render(Graphics g) {
-        g.drawImage(image, x, y, null);
-    }
 
     public void run() {
 
@@ -51,16 +44,10 @@ public class EnemySpell {
         } else if (y > 600) {
             outOfGame = true;
         }
-
     }
 
     public Rectangle getBounds() {
-        return new Rectangle(x, y, image.getWidth(), image.getHeight());
-    }
-
-    public void checkCollisionWithPlayer(Player player) {
-        if (this.getBounds().intersects(player.getPlayerBounds())) player.HP--;
-
+        return new Rectangle((int) x, (int) y, image.getWidth(), image.getHeight());
     }
 
 
