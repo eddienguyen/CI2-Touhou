@@ -15,7 +15,6 @@ import java.util.ArrayList;
 
 public class GameCanvas extends JPanel {
 
-    BlackBoss boss = new BlackBoss();
     Background background = new Background();
     Player player = new Player();
     PlayerSpell spell;
@@ -33,8 +32,6 @@ public class GameCanvas extends JPanel {
         GameObject.add(background);
         GameObject.add(player);
         GameObject.add(new EnemySpawner());
-        boss.position.set(182,30);
-        GameObject.add(boss);
 
     }
 
@@ -54,26 +51,12 @@ public class GameCanvas extends JPanel {
         g.drawImage(backBuffer, 0, 0, null);
 
         g.drawString(String.format("HP: %s", player.HP), 400, 550);
-        g.drawString(String.format("HP: %s", boss.HP), 400, 50);
 
         if (player.HP <= 0){
             g.drawString("YOU DEAD!", 400, 100);                    //doesn't run
             exitGame();
         }
-        if (boss.HP <= 0){
-            g.drawString("YOU WIN!", 400, 100);
-            exitGame();
-        }
 
-    }
-
-
-    public void keyPressed(KeyEvent e) {
-        player.keyPressed(e);
-    }
-
-    public void keyReleased(KeyEvent e) {
-        player.keyReleased(e);
     }
 
     public void run() {

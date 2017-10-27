@@ -1,9 +1,12 @@
 package bases;
 
 import bases.Physics.BoxCollider;
+import bases.Physics.PhysicsBody;
 import touhou.enemies.Enemy;
 import touhou.enemies.EnemySpell;
+import touhou.players.Player;
 
+import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.Vector;
@@ -29,22 +32,22 @@ public class GameObject {
     public void render(Graphics g) {
         if (image != null) {
             g.drawImage(image,
-                    (int) position.x - image.getWidth()/2,
-                    (int) position.y -image.getHeight()/2,
+                    (int) position.x - image.getWidth() / 2,
+                    (int) position.y - image.getHeight() / 2,
                     null);
         }
     }
 
-    public static GameObject collided(BoxCollider boxCollider){
-        for (GameObject gameObject : gameObjects){
-            if (gameObject.isActive && gameObject instanceof Enemy){
-                Enemy enemy = (Enemy) gameObject;
-                if (enemy.boxCollider.collideWith(boxCollider)) return enemy;
-            }
-            if (gameObject.isActive && gameObject instanceof EnemySpell){
-                EnemySpell enemySpell = (EnemySpell) gameObject;
-                if (enemySpell.boxCollider.collideWith(boxCollider)) return enemySpell;
-            }
+    public static <T extends PhysicsBody> T collideWith(BoxCollider boxCollider, Class<T> cls) {
+
+        for (GameObject object : gameObjects) {
+            if (!object.isActive) continue;
+            if (!(object instanceof PhysicsBody)) continue;
+            if (!object.getClass().equals(cls)) continue;
+
+            BoxCollider otherBoxCollider = ((PhysicsBody) object).getBoxCollider();
+            if (otherBoxCollider.collideWith(boxCollider))
+                return (T) object;
         }
         return null;
     }
@@ -55,9 +58,29 @@ public class GameObject {
         newGameObjects.add(gameObject);
     }
 
+    public static <T extends GameObject> T recycle(Class<T> cls) {
+        for (GameObject object : gameObjects) {
+            if (!object.isActive) {
+                if (object.getClass().equals(cls)) {
+                    object.isActive = true;
+                    return (T) object;
+                }
+            }
+        }
+        try {
+            T newGameObject = cls.newInstance();
+            add(newGameObject);
+            return newGameObject;
+        } catch (InstantiationException | IllegalAccessException e) {
+            e.printStackTrace();
+            return null;
+        }
+
+    }
+
     public static void runAll() {
         for (GameObject gameObject : gameObjects) {
-            if (gameObject.isActive)gameObject.run();
+            if (gameObject.isActive) gameObject.run();
         }
 
         gameObjects.addAll(newGameObjects);
@@ -73,11 +96,20 @@ public class GameObject {
     /*
     reference:
      */
-    public static Enemy getEnemyHitted(BoxCollider boxCollider){
-        for (GameObject gameObject : gameObjects){
-            if (gameObject.isActive && gameObject instanceof Enemy){
+    public static Enemy getEnemyHitted(BoxCollider boxCollider) {
+        for (GameObject gameObject : gameObjects) {
+            if (gameObject.isActive && gameObject instanceof Enemy) {
                 Enemy enemy = (Enemy) gameObject;
                 if (enemy.boxCollider.collideWith(boxCollider)) return enemy;
+            }
+        }
+        return null;
+    }
+
+    public static Vector2D getPlayerPosition() {
+        for (GameObject gameObject : gameObjects) {
+            if (gameObject.isActive && gameObject instanceof Player) {
+                return ((Player) gameObject).position;
             }
         }
         return null;

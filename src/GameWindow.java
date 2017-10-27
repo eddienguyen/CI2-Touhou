@@ -1,3 +1,6 @@
+import jdk.internal.util.xml.impl.Input;
+import touhou.inputs.InputManager;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -9,7 +12,7 @@ public class GameWindow extends JFrame {
     long lastTimeUpdate;
 
     public GameWindow() {
-        this.setSize(800, 600);
+        this.setSize(384, 600);
 
         this.canvas = new GameCanvas();
         this.setContentPane(this.canvas);
@@ -22,12 +25,12 @@ public class GameWindow extends JFrame {
 
             @Override
             public void keyPressed(KeyEvent e) {
-                canvas.keyPressed(e);
+                InputManager.instance.keyPressed(e);
             }
 
             @Override
             public void keyReleased(KeyEvent e) {
-                canvas.keyReleased(e);
+                InputManager.instance.keyReleased(e);
             }
         });
 
